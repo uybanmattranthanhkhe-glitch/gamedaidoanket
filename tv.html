@@ -6,7 +6,7 @@
 <script>
 S={players:[],turn:null,dur:6000};fit();loop();poll(()=>{});
 setInterval(()=>{if(!S.status)return;renderScore();const t=S.turn,h=$("#head"),i=$("#info");
- if(S.status=="ended"){h.textContent="🏆 KẾT QUẢ";i.textContent="Chúc mừng các đội!";return}
+ if(S.status=="ended"){h.textContent="🏆 KẾT QUẢ";i.textContent="Chào mừng tham gia trò chơi Đại Đoàn Kết!!";return}
  if(S.mode=="all"){
   const g={bac:[],trung:[],nam:[]},N=S.players.length;let sp=0,dn=0;
   S.players.forEach(p=>{const o=S.pl&&S.pl[p.id];if(!o)return;sp++;if(o.n>=S.per)dn++;if(spinDone(S,o))g[o.region].push(p.name)});
@@ -14,7 +14,7 @@ setInterval(()=>{if(!S.status)return;renderScore();const t=S.turn,h=$("#head"),i
   i.innerHTML=(!sp?"Mọi người bấm QUAY trên điện thoại":"")+Object.keys(g).map(r=>g[r].length?`<div style="color:${COL[r]}"><b>${NM[r]}</b>: <span style="color:#fff">${g[r].map(esc).join(", ")}</span></div>`:"").join("")+`<div style="margin-top:6px">Đã quay: ${sp}/${N} · Đã xong: ${dn}/${N}</div>`;return}
  if(S.status=="playing"&&!t){h.textContent="🎉 Đã bắt đầu!";i.textContent="Chuẩn bị lượt đầu tiên…";return}
  if(S.status=="lobby"||!t){h.textContent="Mời tham gia!";
-  i.innerHTML=`Mở trên điện thoại:<br><span style="color:#f5c542;word-break:break-all">${esc(location.href.replace(/tv\.html.*/,"index.html"))}</span><br>Đã vào: ${S.players.length}`;return}
+  i.innerHTML=`Mở trên điện thoại:<br><span style="color:#f5c542;word-break:break-all">${esc(location.href.replace(/tv\.html.*/,""))}</span><br>Đã vào: ${S.players.length}`;return}
  h.textContent="Lượt: "+t.name;
  if(t.phase=="ready")i.textContent="Chuẩn bị quay…";
  else if(!spinDone(S))i.textContent="🚗 Xe đang chạy…";
