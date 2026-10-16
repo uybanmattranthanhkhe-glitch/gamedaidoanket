@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đại đoàn kết - TV</title><link rel="stylesheet" href="style.css"></head><body>
+<div id="app"><div id="wrap"><div id="board"><img id="car" src="car.svg" alt=""></div></div>
+<div id="side"><h2 id="head"></h2><div id="info"></div><div id="score"></div></div></div>
+<script src="config.js"></script><script src="common.js"></script>
+<script>
+S={players:[],turn:null,dur:6000};fit();loop();poll(()=>{});
+setInterval(()=>{if(!S.status)return;renderScore();const t=S.turn,h=$("#head"),i=$("#info");
+ if(S.status=="ended"){h.textContent="🏆 KẾT QUẢ";i.textContent="Chúc mừng các đội!";return}
+ if(S.status=="lobby"||!t){h.textContent="Mời tham gia!";
+  i.innerHTML=`Mở trên điện thoại:<br><span style="color:#f5c542;word-break:break-all">${esc(location.href.replace(/tv\.html.*/,"index.html"))}</span><br>Đã vào: ${S.players.length}`;return}
+ h.textContent="Lượt: "+t.name;
+ if(t.phase=="ready")i.textContent="Chuẩn bị quay…";
+ else if(!spinDone(S))i.textContent="🚗 Xe đang chạy…";
+ else if(t.phase=="done")i.innerHTML=`${esc(t.name)} đúng <b>${t.ok}/${S.per}</b> câu`;
+ else i.innerHTML=`<span style="color:${COL[t.region]};font-size:1.5em">${NM[t.region]}</span><br>Câu ${Math.min(t.n+1,S.per)}/${S.per} · đúng ${t.ok}`},500);
+</script></body></html>
