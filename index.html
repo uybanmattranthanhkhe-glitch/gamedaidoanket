@@ -36,5 +36,5 @@ function quiz(t){quizOn=true;let n=t.n;const r=t.region,per=S.per;
    bs.forEach(x=>{x.onclick=null;if(+x.dataset.i==q.c)x.classList.add("ok")});if(!good)b.classList.add("bad");
    chain=chain.then(()=>api("ans",{pid:me,ok:good?1:0})).then(s=>{S=s;onS()}).catch(()=>{});
    n++;setTimeout(ask,1300)})}
- if(t.banner){$("#card").innerHTML=`<div class="hd" style="background:${COL[r]}">Kết quả quay</div><h2>Bạn trúng<br><span style="color:${COL[r]}">${NM[r]}</span> 🎉</h2>`;$("#ov").classList.remove("hide");setTimeout(ask,2500)}else ask()}
+ if(t.banner){$("#card").innerHTML=`<div class="hd" style="background:${COL[r]}">Kết quả quay</div><h2>Bạn đã đến<br><span style="color:${COL[r]}">${NM[r]}</span> 🎉</h2>`;$("#ov").classList.remove("hide");setTimeout(ask,2500)}else ask()}
 </script></body></html>
