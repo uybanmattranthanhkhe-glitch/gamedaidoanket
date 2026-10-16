@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đại đoàn kết</title><link rel="stylesheet" href="style.css"></head><body>
+<div id="join" class="screen"><h1>🇻🇳 ĐẠI ĐOÀN KẾT</h1><input id="nm" maxlength="14" placeholder="Nhập tên của bạn"><button class="big" id="go">THAM GIA</button></div>
+<div id="app" class="hide"><div id="wrap"><div id="board"><img id="car" src="car.svg" alt=""><button id="spin" disabled>QUAY!</button></div></div>
+<div id="side"><div id="msg"></div><div id="score"></div></div></div>
+<div id="ov" class="hide"><div id="card"></div></div>
+<script src="config.js"></script><script src="questions.js"></script><script src="common.js"></script>
+<script>
+const Q=window.QUESTIONS;let me=localStorage.pid,quizOn=false,doneId=0,chain=Promise.resolve(),decks={};
+function enter(){$("#join").classList.add("hide");$("#app").classList.remove("hide");fit();S={players:[],turn:null,dur:6000};loop();poll(onS)}
+$("#go").onclick=async()=>{const r=await api("join",{name:$("#nm").value.trim()});if(r.err)return alert(r.err);me=r.me;localStorage.pid=me;enter()};
+if(me)enter();
+$("#spin").onclick=async()=>{$("#spin").disabled=true;S=await api("spin",{pid:me});onS()};
+function onS(){renderScore();const t=S.turn,m=S.players.find(p=>p.id==me);
+ if(!m){localStorage.removeItem("pid");return location.reload()}
+ const mine=t&&t.pid==me;$("#spin").disabled=!(mine&&t.phase=="ready"&&S.status=="playing");
+ $("#msg").textContent=S.status=="ended"?"🏆 Kết thúc! Điểm của bạn: "+m.score:!t?"Chờ ban tổ chức bắt đầu…":
+  mine&&t.phase=="ready"?"🎯 Đến lượt bạn! Bấm vào vòng tròn giữa để QUAY":
+  mine&&t.phase=="done"?`Bạn đúng ${t.ok}/${S.per} câu. Chờ lượt kế…`:mine?"Xe đang chạy…":"Đang chơi: "+t.name;
+ if(mine&&(t.phase=="spin"||t.phase=="quiz")&&spinDone(S)&&!quizOn&&doneId!=t.id)quiz(t)}
+function quiz(t){quizOn=true;let n=t.n;const r=t.region,per=S.per;
+ (function ask(){
+  if(n>=per){doneId=t.id;quizOn=false;return $("#ov").classList.add("hide")}
+  if(!(decks[r]&&decks[r].length))decks[r]=shuf(Q[r]);
+  const q=decks[r].pop(),o=shuf(q.a.map((x,i)=>({x,i})));
+  $("#card").innerHTML=`<div class="hd" style="background:${COL[r]}">${NM[r]} · Câu ${n+1}/${per}</div><h2>${esc(q.q)}</h2><div id="opts">`+
+   o.map((y,k)=>`<button class="opt" data-i="${y.i}">${"ABCD"[k]}. ${esc(y.x)}</button>`).join("")+"</div>";
+  $("#ov").classList.remove("hide");
+  const bs=[...document.querySelectorAll(".opt")];
+  bs.forEach(b=>b.onclick=()=>{const good=+b.dataset.i==q.c;
+   bs.forEach(x=>{x.onclick=null;if(+x.dataset.i==q.c)x.classList.add("ok")});if(!good)b.classList.add("bad");
+   chain=chain.then(()=>api("ans",{pid:me,ok:good?1:0})).then(s=>{S=s;onS()}).catch(()=>{});
+   n++;setTimeout(ask,1300)})})()}
+</script></body></html>
