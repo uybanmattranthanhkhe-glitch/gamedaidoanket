@@ -10,7 +10,7 @@ setInterval(()=>{if(!S.status)return;renderScore();const t=S.turn,h=$("#head"),i
  if(S.mode=="all"){
   const g={bac:[],trung:[],nam:[]},N=S.players.length;let sp=0,dn=0;
   S.players.forEach(p=>{const o=S.pl&&S.pl[p.id];if(!o)return;sp++;if(o.n>=S.per)dn++;if(spinDone(S,o))g[o.region].push(p.name)});
-  h.textContent=!t?"🎉 Đã bắt đầu!":!spinDone(S)?"🚗 "+t.name+" đang quay…":"🎯 "+t.name+" trúng "+NM[t.region];
+  h.textContent=!t?"🎉 Đã bắt đầu!":!spinDone(S)?"🚗 "+t.name+" đang quay…":"🎯 "+t.name+" đến "+NM[t.region];
   i.innerHTML=(!sp?"Mọi người bấm QUAY trên điện thoại":"")+Object.keys(g).map(r=>g[r].length?`<div style="color:${COL[r]}"><b>${NM[r]}</b>: <span style="color:#fff">${g[r].map(esc).join(", ")}</span></div>`:"").join("")+`<div style="margin-top:6px">Đã quay: ${sp}/${N} · Đã xong: ${dn}/${N}</div>`;return}
  if(S.status=="playing"&&!t){h.textContent="🎉 Đã bắt đầu!";i.textContent="Chuẩn bị lượt đầu tiên…";return}
  if(S.status=="lobby"||!t){h.textContent="Mời tham gia!";
