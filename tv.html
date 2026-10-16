@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đại đoàn kết - TV</title><link rel="stylesheet" href="style.css"></head><body>
+<div id="app"><div id="wrap"><div id="board"><img id="car" src="car.svg" alt=""></div></div>
+<div id="side"><h2 id="head"></h2><div id="info"></div><div id="score"></div></div></div>
+<script src="config.js"></script><script src="common.js"></script>
+<script>
+S={players:[],turn:null,dur:6000};fit();
+/* Xe chạy liên tục khi game đang chơi, không phụ thuộc dữ liệu quay từ server */
+let ang=0,last=performance.now();const SPEED=90;/* độ/giây: 1 vòng ~4 giây */
+(function f(now){const dt=(now-last)/1000;last=now;
+ if(S&&S.status=="playing")ang=(ang+SPEED*dt)%360;
+ const t=ang*Math.PI/180,c=$("#car");
+ c.style.left=50+44.5*Math.sin(t)+"%";c.style.top=50-44.5*Math.cos(t)+"%";
+ c.style.transform=`translate(-50%,-50%) rotate(${ang}deg)`;requestAnimationFrame(f)})(last);
+poll(()=>{});
+setInterval(()=>{if(!S.status)return;renderScore();const t=S.turn,h=$("#head"),i=$("#info");
+ if(S.status=="ended"){h.textContent="🏆 KẾT QUẢ";i.textContent="Chào mừng tham gia trò chơi Đại Đoàn Kết!!";return}
+ if(S.mode=="all"){
+  const g={bac:[],trung:[],nam:[]},N=S.players.length;let sp=0,dn=0;
+  S.players.forEach(p=>{const o=S.pl&&S.pl[p.id];if(!o)return;sp++;if(o.n>=S.per)dn++;if(spinDone(S,o))g[o.region].push(p.name)});
+  h.textContent=!t?"🎉 Đã bắt đầu!":!spinDone(S)?"🚗 "+t.name+" đang quay…":"🎯 "+t.name+" đến "+NM[t.region];
+  i.innerHTML=(!sp?"Mọi người bấm QUAY trên điện thoại":"")+Object.keys(g).map(r=>g[r].length?`<div style="color:${COL[r]}"><b>${NM[r]}</b>: <span style="color:#fff">${g[r].map(esc).join(", ")}</span></div>`:"").join("")+`<div style="margin-top:6px">Đã quay: ${sp}/${N} · Đã xong: ${dn}/${N}</div>`;return}
+ if(S.status=="playing"&&!t){h.textContent="🎉 Đã bắt đầu!";i.textContent="Chuẩn bị lượt đầu tiên…";return}
+ if(S.status=="lobby"||!t){h.textContent="Mời tham gia!";
+  i.innerHTML=`Mở trên điện thoại:<br><span style="color:#f5c542;word-break:break-all">${esc(location.href.replace(/tv\.html.*/,""))}</span><br>Đã vào: ${S.players.length}`;return}
+ h.textContent="Lượt: "+t.name;
+ if(t.phase=="ready")i.textContent="Chuẩn bị quay…";
+ else if(!spinDone(S))i.textContent="🚗 Xe đang chạy…";
+ else if(t.phase=="done")i.innerHTML=`${esc(t.name)} đúng <b>${t.ok}/${S.per}</b> câu`;
+ else i.innerHTML=`<span style="color:${COL[t.region]};font-size:1.5em">${NM[t.region]}</span><br>Câu ${Math.min(t.n+1,S.per)}/${S.per} · đúng ${t.ok}`},500);
+</script></body></html>
